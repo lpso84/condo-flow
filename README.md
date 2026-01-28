@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # CondoFlow
 
 Production-grade condominium management platform for Portugal.
