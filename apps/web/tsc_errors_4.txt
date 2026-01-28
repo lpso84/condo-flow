@@ -1,3 +1,0 @@
-src/components/condominium/DocumentsTab.tsx(4,1): error TS6192: All imports in import declaration are unused.
-src/components/condominium/DocumentsTab.tsx(50,28): error TS6133: 'setCategoryFilter' is declared but its value is never read.
-src/components/condominium/UploadDocumentDialog.tsx(27,1): error TS6133: 'cn' is declared but its value is never read.
