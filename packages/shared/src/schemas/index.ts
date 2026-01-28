@@ -103,6 +103,7 @@ export const occurrenceQuerySchema = paginationSchema.extend({
     from: z.string().datetime().optional(),
     to: z.string().datetime().optional(),
     overdue: z.preprocess((val) => val === 'true', z.boolean()).optional(),
+    hasSupplier: z.preprocess((val) => val === 'true' || val === true, z.boolean()).optional(),
 });
 
 export type OccurrenceQuery = z.infer<typeof occurrenceQuerySchema>;

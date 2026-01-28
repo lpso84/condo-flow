@@ -39,7 +39,7 @@ export default function CondominiumDetailPage() {
 
     const { data: condo, isLoading, isError, refetch } = useQuery<Condominium>({
         queryKey: ['condominium', id],
-        queryFn: () => apiClient.get(`/condominiums/${id}`),
+        queryFn: () => apiClient.get<Condominium>(`/condominiums/${id}`).then(res => res.data),
         enabled: !!id,
     });
 

@@ -108,13 +108,13 @@ router.get('/priorities', authenticate, async (req, res) => {
         const upcomingAssemblies = await prisma.assembly.findMany({
             where: {
                 status: 'AGENDADA',
-                scheduledDate: {
+                date: {
                     gte: now,
                     lte: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000),
                 },
             },
             include: { condominium: true },
-            orderBy: { scheduledDate: 'asc' },
+            orderBy: { date: 'asc' },
             take: 5,
         });
 
@@ -124,7 +124,7 @@ router.get('/priorities', authenticate, async (req, res) => {
                 type: 'assembly',
                 title: `Assembleia agendada`,
                 description: assembly.location || 'Assembleia Geral',
-                dueDate: assembly.scheduledDate,
+                dueDate: assembly.date,
                 urgency: 'medium',
                 condominiumId: assembly.condominiumId,
                 condominiumName: assembly.condominium.name,

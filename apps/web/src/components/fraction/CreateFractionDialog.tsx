@@ -47,7 +47,7 @@ export function CreateFractionDialog({ open, onOpenChange }: CreateFractionDialo
     // Fetch condominiums for selection
     const { data: condosData } = useQuery<PaginatedResponse<Condominium>>({
         queryKey: ['condominiums-list'],
-        queryFn: () => apiClient.get('/condominiums', { pageSize: 100 }),
+        queryFn: () => apiClient.get<PaginatedResponse<Condominium>>('/condominiums', { pageSize: 100 }).then(res => res.data),
         enabled: open,
     });
 
@@ -138,7 +138,7 @@ export function CreateFractionDialog({ open, onOpenChange }: CreateFractionDialo
                                 <SelectValue placeholder="Selecione o condomínio" />
                             </SelectTrigger>
                             <SelectContent>
-                                {condominiums.map((condo) => (
+                                {condominiums.map((condo: Condominium) => (
                                     <SelectItem key={condo.id} value={condo.id}>{condo.name}</SelectItem>
                                 ))}
                             </SelectContent>

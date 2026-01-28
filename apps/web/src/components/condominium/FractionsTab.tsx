@@ -45,7 +45,7 @@ export function FractionsTab({ condominiumId }: FractionsTabProps) {
 
     const { data, isLoading } = useQuery<PaginatedResponse<Fraction>>({
         queryKey: ['condominium-fractions', condominiumId, search],
-        queryFn: () => apiClient.get('/fractions', { condominiumId, search: search || undefined, pageSize: 100 }),
+        queryFn: () => apiClient.get<PaginatedResponse<Fraction>>('/fractions', { condominiumId, search: search || undefined, pageSize: 100 }).then(res => res.data),
     });
 
     const fractions = data?.data || [];

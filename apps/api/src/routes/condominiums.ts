@@ -76,7 +76,7 @@ router.get('/:id', authenticate, async (req, res) => {
                 },
                 assemblies: {
                     orderBy: {
-                        scheduledDate: 'desc',
+                        date: 'desc',
                     },
                     take: 5,
                 },

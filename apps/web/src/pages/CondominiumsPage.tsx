@@ -23,7 +23,7 @@ export default function CondominiumsPage() {
 
     const { data, isLoading, isError } = useQuery<PaginatedResponse<Condominium>>({
         queryKey: ['condominiums', page, search],
-        queryFn: () => apiClient.get('/condominiums', { page, search, pageSize: 12 }),
+        queryFn: () => apiClient.get<PaginatedResponse<Condominium>>('/condominiums', { page, search, pageSize: 12 }).then(res => res.data),
         staleTime: 60000, // 1 minute
     });
 

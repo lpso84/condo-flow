@@ -9,10 +9,18 @@ interface OccurrenceStatsProps {
     onFilterClick: (status: string, overdue?: boolean) => void;
 }
 
+interface OccurrenceStatsData {
+    open: number;
+    urgent: number;
+    execution: number;
+    resolvedRecent: number;
+    overdue: number;
+}
+
 export function OccurrenceStats({ condominiumId, onFilterClick }: OccurrenceStatsProps) {
-    const { data: stats, isLoading } = useQuery({
+    const { data: stats, isLoading } = useQuery<OccurrenceStatsData>({
         queryKey: ['occurrence-stats', condominiumId],
-        queryFn: () => apiClient.get('/occurrences/stats', { condominiumId }),
+        queryFn: () => apiClient.get<OccurrenceStatsData>('/occurrences/stats', { condominiumId }).then(res => res.data),
         refetchInterval: 30000,
     });
 

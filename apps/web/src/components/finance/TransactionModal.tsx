@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { transactionSchema, type TransactionInput, type Condominium, type Fraction, type Supplier } from '@condoflow/shared';
+import { transactionSchema, type TransactionInput, type Condominium, type Fraction, type Supplier, type PaginatedResponse } from '@condoflow/shared';
 import {
     Dialog,
     DialogContent,
@@ -61,20 +61,20 @@ export function TransactionModal({
 
     const selectedCondoId = form.watch('condominiumId');
 
-    const { data: condosData } = useQuery({
+    const { data: condosData } = useQuery<PaginatedResponse<Condominium>>({
         queryKey: ['condominiums-list'],
-        queryFn: () => apiClient.get('/condominiums', { pageSize: 100 }),
+        queryFn: () => apiClient.get<PaginatedResponse<Condominium>>('/condominiums', { pageSize: 100 }).then(res => res.data),
     });
 
-    const { data: fractionsData } = useQuery({
+    const { data: fractionsData } = useQuery<PaginatedResponse<Fraction>>({
         queryKey: ['fractions-list', selectedCondoId],
-        queryFn: () => apiClient.get(`/fractions`, { condominiumId: selectedCondoId, pageSize: 200 }),
+        queryFn: () => apiClient.get<PaginatedResponse<Fraction>>(`/fractions`, { condominiumId: selectedCondoId, pageSize: 200 }).then(res => res.data),
         enabled: !!selectedCondoId,
     });
 
-    const { data: suppliersData } = useQuery({
+    const { data: suppliersData } = useQuery<PaginatedResponse<Supplier>>({
         queryKey: ['suppliers-list'],
-        queryFn: () => apiClient.get('/suppliers', { pageSize: 100 }),
+        queryFn: () => apiClient.get<PaginatedResponse<Supplier>>('/suppliers', { pageSize: 100 }).then(res => res.data),
     });
 
     useEffect(() => {
@@ -117,7 +117,7 @@ export function TransactionModal({
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {(condosData as any)?.data?.map((c: Condominium) => (
+                                                {condosData?.data?.map((c: Condominium) => (
                                                     <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -217,7 +217,7 @@ export function TransactionModal({
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {(fractionsData as any)?.data?.map((f: Fraction) => (
+                                                {fractionsData?.data?.map((f: Fraction) => (
                                                     <SelectItem key={f.id} value={f.id}>Fração {f.number} - {f.ownerName}</SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -240,7 +240,7 @@ export function TransactionModal({
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {(suppliersData as any)?.data?.map((s: Supplier) => (
+                                                {suppliersData?.data?.map((s: Supplier) => (
                                                     <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                                                 ))}
                                             </SelectContent>

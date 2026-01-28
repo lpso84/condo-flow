@@ -40,7 +40,7 @@ export function FinancesTab({ condominiumId }: FinancesTabProps) {
 
     const { data, isLoading } = useQuery<PaginatedResponse<Transaction>>({
         queryKey: ['condominium-transactions', condominiumId, search],
-        queryFn: () => apiClient.get('/transactions', { condominiumId, search: search || undefined, pageSize: 50 }),
+        queryFn: () => apiClient.get<PaginatedResponse<Transaction>>('/transactions', { condominiumId, search: search || undefined, pageSize: 50 }).then(res => res.data),
     });
 
     const transactions = data?.data || [];

@@ -1,8 +1,5 @@
-import React from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../../lib/api';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
 import {
     Table,
     TableBody,
@@ -13,16 +10,13 @@ import {
 } from '../../components/ui/table';
 import { Switch } from '../../components/ui/switch';
 import { Badge } from '../../components/ui/badge';
-import { Loader2, ArrowRight } from 'lucide-react';
-import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 export default function WorkflowsPage() {
-    const queryClient = useQueryClient();
-
     // Fetch states
-    const { data: states, isLoading } = useQuery({
+    const { data: states, isLoading } = useQuery<any[]>({
         queryKey: ['settings-workflow-states'],
-        queryFn: () => apiClient.get('/settings/workflow/states').then(res => res.data)
+        queryFn: () => apiClient.get<any[]>('/settings/workflow/states').then(res => res.data)
     });
 
     return (

@@ -2,12 +2,12 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Assembly, AssemblyStatus } from '@condoflow/shared';
+import { Assembly } from '@condoflow/shared';
 import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
-import { FileText, CheckCircle, Clock, AlertTriangle, Printer, Upload } from 'lucide-react';
+import { FileText, Clock, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface AssemblyDetailDrawerProps {
@@ -25,7 +25,7 @@ export function AssemblyDetailDrawer({ assemblyId, onClose, onEdit, onUpdate }: 
         if (assemblyId) {
             setLoading(true);
             apiClient.get<Assembly>(`/assemblies/${assemblyId}`)
-                .then(setAssembly)
+                .then(res => setAssembly(res.data))
                 .catch(() => toast.error('Erro ao carregar detalhes'))
                 .finally(() => setLoading(false));
         } else {

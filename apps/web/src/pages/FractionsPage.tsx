@@ -80,7 +80,7 @@ export default function FractionsPage() {
     // Fetch fractions with server-side filtering and pagination
     const { data, isLoading, isError } = useQuery<PaginatedResponse<Fraction>>({
         queryKey: ['fractions-global', page, pageSize, search, selectedCondo, statusFilter, occupationFilter, sortBy, sortOrder],
-        queryFn: () => apiClient.get('/fractions', {
+        queryFn: () => apiClient.get<PaginatedResponse<Fraction>>('/fractions', {
             page,
             pageSize,
             search,
@@ -89,13 +89,13 @@ export default function FractionsPage() {
             occupation: occupationFilter === 'all' ? undefined : occupationFilter,
             sortBy,
             sortOrder
-        }),
+        }).then(res => res.data),
     });
 
     // Fetch condominiums for filter
     const { data: condosData } = useQuery<PaginatedResponse<Condominium>>({
         queryKey: ['condominiums-list'],
-        queryFn: () => apiClient.get('/condominiums', { pageSize: 100 }),
+        queryFn: () => apiClient.get<PaginatedResponse<Condominium>>('/condominiums', { pageSize: 100 }).then(res => res.data),
     });
 
     const fractions = data?.data || [];
@@ -105,12 +105,12 @@ export default function FractionsPage() {
 
     const handleExport = async () => {
         try {
-            const response = await apiClient.get('/fractions/export', {
+            const response = await apiClient.get<any>('/fractions/export', {
                 search,
                 condominiumId: selectedCondo === 'all' ? undefined : selectedCondo,
                 paymentStatus: statusFilter === 'all' ? undefined : statusFilter,
                 occupation: occupationFilter === 'all' ? undefined : occupationFilter
-            });
+            }).then(res => res.data);
 
             const blob = new Blob([response as any], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);

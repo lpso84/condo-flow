@@ -28,17 +28,17 @@ export default function DashboardPage() {
 
     const { data: stats } = useQuery<DashboardStats>({
         queryKey: ['dashboard', 'stats'],
-        queryFn: () => apiClient.get('/dashboard/stats'),
+        queryFn: () => apiClient.get<DashboardStats>('/dashboard/stats').then(res => res.data),
     });
 
     const { data: priorities = [] } = useQuery<PriorityItem[]>({
         queryKey: ['dashboard', 'priorities'],
-        queryFn: () => apiClient.get('/dashboard/priorities'),
+        queryFn: () => apiClient.get<PriorityItem[]>('/dashboard/priorities').then(res => res.data),
     });
 
     const { data: atRisk = [] } = useQuery<CondominiumRisk[]>({
         queryKey: ['dashboard', 'at-risk'],
-        queryFn: () => apiClient.get('/dashboard/at-risk'),
+        queryFn: () => apiClient.get<CondominiumRisk[]>('/dashboard/at-risk').then(res => res.data),
     });
 
     const handleLogout = () => {
@@ -189,7 +189,7 @@ export default function DashboardPage() {
                                             className="group flex items-start gap-4 p-4 rounded-lg border bg-card hover:bg-accent/50 hover:border-accent transition-all"
                                         >
                                             <div className={`mt-1.5 w-2.5 h-2.5 rounded-full shrink-0 ${priority.urgency === 'high' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' :
-                                                    priority.urgency === 'medium' ? 'bg-orange-500' : 'bg-yellow-500'
+                                                priority.urgency === 'medium' ? 'bg-orange-500' : 'bg-yellow-500'
                                                 }`} />
 
                                             <div className="flex-1 min-w-0">

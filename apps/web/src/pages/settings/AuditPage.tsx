@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../../lib/api';
 import { Input } from '../../components/ui/input';
@@ -11,16 +11,16 @@ import {
     TableRow
 } from '../../components/ui/table';
 import { Badge } from '../../components/ui/badge';
-import { Loader2, Search, Filter } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
 export default function AuditPage() {
     const [searchTerm, setSearchTerm] = useState('');
 
-    const { data: logs, isLoading } = useQuery({
+    const { data: logs, isLoading } = useQuery<any[]>({
         queryKey: ['audit-logs'],
-        queryFn: () => apiClient.get('/settings/audit-logs').then(res => res.data)
+        queryFn: () => apiClient.get<any[]>('/settings/audit-logs').then(res => res.data)
     });
 
     const filteredLogs = logs?.filter((log: any) =>

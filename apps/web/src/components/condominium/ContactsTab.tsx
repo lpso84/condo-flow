@@ -31,7 +31,7 @@ export function ContactsTab({ condominiumId }: ContactsTabProps) {
 
     const { data, isLoading } = useQuery<PaginatedResponse<Contact>>({
         queryKey: ['condominium-contacts', condominiumId, search],
-        queryFn: () => apiClient.get('/contacts', { condominiumId, search: search || undefined, pageSize: 50 }),
+        queryFn: () => apiClient.get<PaginatedResponse<Contact>>('/contacts', { condominiumId, search: search || undefined, pageSize: 50 }).then(res => res.data),
     });
 
     const contacts = data?.data || [];

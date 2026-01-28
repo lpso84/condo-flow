@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import OccurrencesPage from '../pages/OccurrencesPage';
+import { OccurrenceCategory, OccurrencePriority, OccurrenceStatus } from '@condoflow/shared';
 import type { PaginatedResponse, Occurrence } from '@condoflow/shared';
 
 vi.mock('@/lib/api', () => {
@@ -27,9 +28,9 @@ const sampleOccurrence: Occurrence = {
     fractionId: null,
     title: 'Infiltração na garagem',
     description: 'Água a entrar pela parede norte da garagem.',
-    category: 'INFILTRACAO',
-    priority: 'NORMAL',
-    status: 'ABERTA',
+    category: OccurrenceCategory.INFILTRACAO,
+    priority: OccurrencePriority.NORMAL,
+    status: OccurrenceStatus.ABERTA,
     location: 'Garagem piso -1',
     reportedBy: 'João Silva',
     reportedAt: new Date(),
@@ -114,7 +115,7 @@ describe('OccurrencesPage', () => {
         await waitFor(() => {
             expect(apiClient.post).toHaveBeenCalledWith(
                 expect.stringContaining('/occurrences/'),
-                expect.objectContaining({ status: 'RESOLVIDA' })
+                expect.objectContaining({ status: OccurrenceStatus.RESOLVIDA })
             );
         });
     });

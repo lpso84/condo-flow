@@ -79,16 +79,22 @@ router.post('/', authenticate, async (req, res) => {
             return res.status(400).json({ message: 'Dados inválidos', errors: validation.error.errors });
         }
 
-        const { agendaItems, ...data } = validation.data;
+        const { agendaItems, decisions, minutes, ...data } = validation.data;
 
         const assembly = await prisma.assembly.create({
             data: {
                 ...data,
                 agendaItems: agendaItems ? {
                     create: agendaItems
+                } : undefined,
+                decisions: decisions ? {
+                    create: decisions
+                } : undefined,
+                minutes: minutes ? {
+                    create: minutes
                 } : undefined
             },
-            include: { agendaItems: true }
+            include: { agendaItems: true, decisions: true, minutes: true }
         });
         res.status(201).json(assembly);
     } catch (error) {

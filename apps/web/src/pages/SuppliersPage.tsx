@@ -37,16 +37,16 @@ export default function SuppliersPage() {
     // Data Fetching
     const { data, isLoading, refetch } = useQuery<PaginatedResponse<Supplier>>({
         queryKey: ['suppliers', filters],
-        queryFn: () => apiClient.get('/suppliers', filters),
+        queryFn: () => apiClient.get<PaginatedResponse<Supplier>>('/suppliers', filters).then(res => res.data),
     });
 
     // Mutations
     const mutation = useMutation({
         mutationFn: (variables: { id?: string, data: SupplierInput }) => {
             if (variables.id) {
-                return apiClient.put(`/suppliers/${variables.id}`, variables.data);
+                return apiClient.put(`/suppliers/${variables.id}`, variables.data).then(res => res.data);
             }
-            return apiClient.post('/suppliers', variables.data);
+            return apiClient.post('/suppliers', variables.data).then(res => res.data);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['suppliers'] });
@@ -67,7 +67,7 @@ export default function SuppliersPage() {
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id: string) => apiClient.delete(`/suppliers/${id}`),
+        mutationFn: (id: string) => apiClient.delete(`/suppliers/${id}`).then(res => res.data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['suppliers'] });
             toast({ title: 'Sucesso', description: 'Fornecedor eliminado com sucesso.' });
@@ -78,7 +78,7 @@ export default function SuppliersPage() {
     });
 
     const statusMutation = useMutation({
-        mutationFn: (supplier: Supplier) => apiClient.put(`/suppliers/${supplier.id}`, { active: !supplier.active }),
+        mutationFn: (supplier: Supplier) => apiClient.put(`/suppliers/${supplier.id}`, { active: !supplier.active }).then(res => res.data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['suppliers'] });
             toast({ title: 'Estado Atualizado', description: 'O estado do fornecedor foi alterado.' });

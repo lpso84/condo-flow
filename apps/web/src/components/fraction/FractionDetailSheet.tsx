@@ -37,7 +37,7 @@ interface FractionDetailSheetProps {
 export function FractionDetailSheet({ fractionId, open, onOpenChange }: FractionDetailSheetProps) {
     const { data: fraction, isLoading } = useQuery<Fraction & { transactions: Transaction[], occurrences: Occurrence[] }>({
         queryKey: ['fraction-detail', fractionId],
-        queryFn: () => apiClient.get(`/fractions/${fractionId}`),
+        queryFn: () => apiClient.get<Fraction & { transactions: Transaction[], occurrences: Occurrence[] }>(`/fractions/${fractionId}`).then(res => res.data),
         enabled: !!fractionId && open,
     });
 
@@ -205,7 +205,7 @@ export function FractionDetailSheet({ fractionId, open, onOpenChange }: Fraction
                                                         <td colSpan={3} className="p-8 text-center text-muted-foreground italic">Sem movimentos registados.</td>
                                                     </tr>
                                                 ) : (
-                                                    fraction.transactions?.map((t) => (
+                                                    fraction.transactions?.map((t: Transaction) => (
                                                         <tr key={t.id} className="hover:bg-gray-50/50 transition-colors">
                                                             <td className="p-3 text-xs text-gray-500">{format(new Date(t.date), 'dd/MM/yyyy')}</td>
                                                             <td className="p-3 font-medium text-gray-700">{t.description}</td>
@@ -237,7 +237,7 @@ export function FractionDetailSheet({ fractionId, open, onOpenChange }: Fraction
                                                 <p className="text-sm text-muted-foreground">Sem ocorrências ativas nesta fração.</p>
                                             </div>
                                         ) : (
-                                            fraction.occurrences?.map((o) => (
+                                            fraction.occurrences?.map((o: Occurrence) => (
                                                 <div key={o.id} className="bg-white border rounded-xl p-4 hover:border-primary/30 transition-all group cursor-pointer">
                                                     <div className="flex justify-between items-start">
                                                         <div>

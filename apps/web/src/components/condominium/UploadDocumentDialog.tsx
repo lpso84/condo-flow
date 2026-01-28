@@ -22,9 +22,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
-import { documentSchema, type DocumentInput } from '@condoflow/shared';
+import { documentSchema, type DocumentInput, DocumentCategory } from '@condoflow/shared';
 import { Upload, File, X, CheckCircle2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface UploadDocumentDialogProps {
     open: boolean;
@@ -48,7 +47,7 @@ export function UploadDocumentDialog({ open, onOpenChange, condominiumId }: Uplo
         resolver: zodResolver(documentSchema),
         defaultValues: {
             condominiumId,
-            category: 'OUTRO',
+            category: DocumentCategory.OUTROS,
             title: '',
             fileName: '',
         },
@@ -175,18 +174,16 @@ export function UploadDocumentDialog({ open, onOpenChange, condominiumId }: Uplo
 
                         <div className="grid gap-2">
                             <Label htmlFor="category" className="text-[10px] font-black uppercase tracking-widest text-gray-500">Categoria</Label>
-                            <Select onValueChange={(val) => setValue('category', val as any)} defaultValue="OUTRO">
+                            <Select onValueChange={(val) => setValue('category', val as any)} defaultValue={DocumentCategory.OUTROS}>
                                 <SelectTrigger className="h-11 font-bold border-gray-200">
                                     <SelectValue placeholder="Selecione" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="ATAS">Atas</SelectItem>
-                                    <SelectItem value="CONTRATOS">Contratos</SelectItem>
-                                    <SelectItem value="FATURAS">Faturas</SelectItem>
-                                    <SelectItem value="SEGUROS">Seguros</SelectItem>
-                                    <SelectItem value="CERTIFICADOS">Certificados</SelectItem>
-                                    <SelectItem value="CONVOCATORIAS">Convocatórias</SelectItem>
-                                    <SelectItem value="OUTRO">Outro</SelectItem>
+                                    <SelectItem value={DocumentCategory.ATA}>Atas</SelectItem>
+                                    <SelectItem value={DocumentCategory.CONTRATO}>Contratos</SelectItem>
+                                    <SelectItem value={DocumentCategory.FATURA}>Faturas</SelectItem>
+                                    <SelectItem value={DocumentCategory.SEGURO}>Seguros</SelectItem>
+                                    <SelectItem value={DocumentCategory.OUTROS}>Outros</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

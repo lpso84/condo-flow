@@ -16,7 +16,6 @@ export default function DocumentsPage() {
     const [condominiums, setCondominiums] = useState<Condominium[]>([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
     const [isUploadOpen, setIsUploadOpen] = useState(false);
     const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
 
@@ -36,8 +35,7 @@ export default function DocumentsPage() {
                 ...filters
             };
             const response = await apiClient.get<PaginatedResponse<Document>>('/documents', params);
-            setDocuments(response.data);
-            setTotalPages(response.totalPages);
+            setDocuments(response.data.data);
         } catch (error) {
             toast.error('Erro ao carregar documentos');
         } finally {
@@ -48,7 +46,7 @@ export default function DocumentsPage() {
     const fetchCondominiums = async () => {
         try {
             const response = await apiClient.get<PaginatedResponse<Condominium>>('/condominiums', { pageSize: 100 });
-            setCondominiums(response.data);
+            setCondominiums(response.data.data);
         } catch (e) { console.error(e); }
     };
 

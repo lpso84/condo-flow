@@ -20,7 +20,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from './StatusBadge';
 import { PriorityIcon } from './PriorityBadge';
-import { Occurrence, OccurrenceStatus } from '@condoflow/shared';
+import { Occurrence, OccurrenceStatus, OccurrencePriority } from '@condoflow/shared';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface OccurrencesTableProps {
@@ -150,13 +150,13 @@ export function OccurrencesTable({
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator />
                                             <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Mudar Estado</DropdownMenuLabel>
-                                            <DropdownMenuItem onClick={() => onStatusChange(occurrence, 'EM_EXECUCAO')}>
+                                            <DropdownMenuItem onClick={() => onStatusChange(occurrence, OccurrenceStatus.EM_EXECUCAO)}>
                                                 <Clock className="mr-2 h-4 w-4 text-orange-500" /> Em Execução
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => onStatusChange(occurrence, 'RESOLVIDA')}>
+                                            <DropdownMenuItem onClick={() => onStatusChange(occurrence, OccurrenceStatus.RESOLVIDA)}>
                                                 <CheckCircle className="mr-2 h-4 w-4 text-green-500" /> Marcar como Resolvida
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => onStatusChange(occurrence, 'ARQUIVADA')}>
+                                            <DropdownMenuItem onClick={() => onStatusChange(occurrence, OccurrenceStatus.ARQUIVADA)}>
                                                 <Archive className="mr-2 h-4 w-4 text-slate-500" /> Arquivar
                                             </DropdownMenuItem>
 
@@ -165,7 +165,7 @@ export function OccurrencesTable({
                                                     <DropdownMenuSeparator />
                                                     <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Prioridade</DropdownMenuLabel>
                                                     <DropdownMenuItem onClick={() => onToggleUrgent(occurrence)}>
-                                                        <AlertTriangle className="mr-2 h-4 w-4 text-red-500" /> {occurrence.priority === 'URGENTE' ? 'Marcar como Normal' : 'Marcar como Urgente'}
+                                                        <AlertTriangle className="mr-2 h-4 w-4 text-red-500" /> {occurrence.priority === OccurrencePriority.URGENTE ? 'Marcar como Normal' : 'Marcar como Urgente'}
                                                     </DropdownMenuItem>
                                                 </>
                                             )}

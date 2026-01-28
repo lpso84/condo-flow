@@ -58,14 +58,24 @@ export function OccurrenceDrawer({ opened, onClose, occurrenceId }: OccurrenceDr
         comments?: any[];
         auditLogs?: any[];
         documents?: any[];
+        supplier?: any;
+        condominium?: any;
+        fraction?: any;
     }>({
         queryKey: ['occurrence-detail', occurrenceId],
-        queryFn: () => apiClient.get(`/occurrences/${occurrenceId}`),
+        queryFn: () => apiClient.get<Occurrence & {
+            comments?: any[];
+            auditLogs?: any[];
+            documents?: any[];
+            supplier?: any;
+            condominium?: any;
+            fraction?: any;
+        }>(`/occurrences/${occurrenceId}`).then(res => res.data),
         enabled: !!occurrenceId && opened,
     });
 
     const addCommentMutation = useMutation({
-        mutationFn: (text: string) => apiClient.post(`/occurrences/${occurrenceId}/comments`, { text }),
+        mutationFn: (text: string) => apiClient.post(`/occurrences/${occurrenceId}/comments`, { text }).then(res => res.data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['occurrence-detail', occurrenceId] });
             setCommentText('');
@@ -85,7 +95,7 @@ export function OccurrenceDrawer({ opened, onClose, occurrenceId }: OccurrenceDr
 
     const changeStatusMutation = useMutation({
         mutationFn: ({ status, notes }: { status: OccurrenceStatus; notes?: string }) =>
-            apiClient.post(`/occurrences/${occurrenceId}/status`, { status, notes }),
+            apiClient.post(`/occurrences/${occurrenceId}/status`, { status, notes }).then(res => res.data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['occurrence-detail', occurrenceId] });
             queryClient.invalidateQueries({ queryKey: ['occurrences-global'] });
@@ -112,7 +122,7 @@ export function OccurrenceDrawer({ opened, onClose, occurrenceId }: OccurrenceDr
                 category: 'OUTRO',
                 title: file.name,
                 fileName: file.name,
-            });
+            }).then(res => res.data);
         },
         onMutate: () => {
             setUploading(true);
@@ -139,7 +149,7 @@ export function OccurrenceDrawer({ opened, onClose, occurrenceId }: OccurrenceDr
     });
 
     const deleteDocumentMutation = useMutation({
-        mutationFn: (id: string) => apiClient.delete(`/documents/${id}`),
+        mutationFn: (id: string) => apiClient.delete(`/documents/${id}`).then(res => res.data),
         onSuccess: () => {
             if (occurrenceId) {
                 queryClient.invalidateQueries({ queryKey: ['occurrence-detail', occurrenceId] });

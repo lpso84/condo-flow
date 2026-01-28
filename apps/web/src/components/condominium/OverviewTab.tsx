@@ -26,7 +26,7 @@ interface OverviewTabProps {
 export function OverviewTab({ condo, onTabChange }: OverviewTabProps) {
     const { data: activity, isLoading } = useQuery<any[]>({
         queryKey: ['condominium-activity', condo.id],
-        queryFn: () => apiClient.get(`/condominiums/${condo.id}/activity`),
+        queryFn: () => apiClient.get<any[]>(`/condominiums/${condo.id}/activity`).then(res => res.data),
     });
 
     const getActivityIcon = (type: string) => {
@@ -66,7 +66,7 @@ export function OverviewTab({ condo, onTabChange }: OverviewTabProps) {
                 return (
                     <span>
                         Assembleia {data.status === 'AGENDADA' ? 'agendada' : 'atualizada'} para
-                        <span className="font-bold"> {data.scheduledDate ? format(new Date(data.scheduledDate), "d 'de' MMMM", { locale: pt }) : 'TBD'}</span>
+                        <span className="font-bold"> {data.date ? format(new Date(data.date), "d 'de' MMMM", { locale: pt }) : 'TBD'}</span>
                     </span>
                 );
             default:

@@ -47,7 +47,7 @@ export function OccurrencesTab({ condominiumId }: OccurrencesTabProps) {
 
     const { data, isLoading } = useQuery<PaginatedResponse<Occurrence>>({
         queryKey: ['condominium-occurrences', condominiumId, search],
-        queryFn: () => apiClient.get('/occurrences', { condominiumId, search: search || undefined, pageSize: 50 }),
+        queryFn: () => apiClient.get<PaginatedResponse<Occurrence>>('/occurrences', { condominiumId, search: search || undefined, pageSize: 50 }).then(res => res.data),
     });
 
     const occurrences = data?.data || [];

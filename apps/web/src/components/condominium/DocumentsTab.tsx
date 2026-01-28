@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
-import { Card, CardContent } from '@/components/ui/card';
 import {
     FileText,
     Search,
@@ -47,16 +46,16 @@ export function DocumentsTab({ condominiumId }: DocumentsTabProps) {
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const [search, setSearch] = useState('');
-    const [categoryFilter, setCategoryFilter] = useState('all');
+    const [categoryFilter] = useState('all');
     const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
 
     const { data, isLoading } = useQuery<PaginatedResponse<Document>>({
         queryKey: ['condominium-documents', condominiumId, search, categoryFilter],
-        queryFn: () => apiClient.get('/documents', {
+        queryFn: () => apiClient.get<PaginatedResponse<Document>>('/documents', {
             condominiumId,
             search: search || undefined,
             category: categoryFilter === 'all' ? undefined : categoryFilter
-        }),
+        }).then(res => res.data),
     });
 
     const deleteMutation = useMutation({

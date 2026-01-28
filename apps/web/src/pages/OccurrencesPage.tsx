@@ -25,12 +25,12 @@ export default function OccurrencesPage() {
 
     const { data, isLoading } = useQuery<PaginatedResponse<Occurrence>>({
         queryKey: ['occurrences-global', filters],
-        queryFn: () => apiClient.get('/occurrences', filters),
+        queryFn: () => apiClient.get<PaginatedResponse<Occurrence>>('/occurrences', filters).then(res => res.data),
     });
 
     const statusMutation = useMutation({
         mutationFn: ({ id, status }: { id: string; status: OccurrenceStatus }) =>
-            apiClient.post(`/occurrences/${id}/status`, { status }),
+            apiClient.post(`/occurrences/${id}/status`, { status }).then(res => res.data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['occurrences-global'] });
             queryClient.invalidateQueries({ queryKey: ['occurrence-stats'] });
@@ -40,7 +40,7 @@ export default function OccurrencesPage() {
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id: string) => apiClient.delete(`/occurrences/${id}`),
+        mutationFn: (id: string) => apiClient.delete(`/occurrences/${id}`).then(res => res.data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['occurrences-global'] });
             queryClient.invalidateQueries({ queryKey: ['occurrence-stats'] });

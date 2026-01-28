@@ -16,7 +16,6 @@ export default function AssembliesPage() {
     const [condominiums, setCondominiums] = useState<Condominium[]>([]); // simplified for select
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
 
     // Dialogs
     const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -40,10 +39,8 @@ export default function AssembliesPage() {
                 pageSize: 20,
                 ...filters
             };
-            // Note: apiClient types might need cast if shared types not fully synced in IDE context
             const response = await apiClient.get<PaginatedResponse<Assembly>>('/assemblies', params);
-            setAssemblies(response.data);
-            setTotalPages(response.totalPages);
+            setAssemblies(response.data.data);
         } catch (error) {
             toast.error('Erro ao carregar assembleias');
             console.error(error);
@@ -55,7 +52,7 @@ export default function AssembliesPage() {
     const fetchCondominiums = async () => {
         try {
             const response = await apiClient.get<PaginatedResponse<Condominium>>('/condominiums', { pageSize: 100 });
-            setCondominiums(response.data);
+            setCondominiums(response.data.data);
         } catch (e) {
             console.error('Failed to load condos');
         }

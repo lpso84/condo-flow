@@ -2,14 +2,14 @@ import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 import { z } from 'zod';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate, authorize, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
 // --- GLOBAL SETTINGS ---
 
 // Get Global Settings
-router.get('/global', authenticate, authorize('ADMIN', 'GESTOR'), async (req, res) => {
+router.get('/global', authenticate, authorize('ADMIN', 'GESTOR'), async (req: AuthRequest, res) => {
     try {
         const settings = await prisma.globalSettings.findUnique({
             where: { id: 'global' },
@@ -22,7 +22,7 @@ router.get('/global', authenticate, authorize('ADMIN', 'GESTOR'), async (req, re
 });
 
 // Update Global Settings
-router.put('/global', authenticate, authorize('ADMIN'), async (req, res) => {
+router.put('/global', authenticate, authorize('ADMIN'), async (req: AuthRequest, res) => {
     try {
         const schema = z.object({
             companyName: z.string().min(1),
@@ -51,7 +51,7 @@ router.put('/global', authenticate, authorize('ADMIN'), async (req, res) => {
                 entityId: 'global',
                 action: 'UPDATE',
                 details: JSON.stringify(data),
-                performedBy: req.user?.userId || 'system',
+                performedBy: req.user?.id || 'system',
             },
         });
 
@@ -70,7 +70,7 @@ router.get('/categories/occurrences', authenticate, async (req, res) => {
     res.json(categories);
 });
 
-router.post('/categories/occurrences', authenticate, authorize('ADMIN'), async (req, res) => {
+router.post('/categories/occurrences', authenticate, authorize('ADMIN'), async (req: AuthRequest, res) => {
     try {
         const category = await prisma.occurrenceCategory.create({
             data: req.body,
@@ -82,7 +82,7 @@ router.post('/categories/occurrences', authenticate, authorize('ADMIN'), async (
                 entityId: category.id,
                 action: 'CREATE',
                 details: category.name,
-                performedBy: req.user?.userId || 'system',
+                performedBy: req.user?.id || 'system',
             },
         });
 
@@ -92,7 +92,7 @@ router.post('/categories/occurrences', authenticate, authorize('ADMIN'), async (
     }
 });
 
-router.put('/categories/occurrences/:id', authenticate, authorize('ADMIN'), async (req, res) => {
+router.put('/categories/occurrences/:id', authenticate, authorize('ADMIN'), async (req: AuthRequest, res) => {
     try {
         const category = await prisma.occurrenceCategory.update({
             where: { id: req.params.id },
@@ -105,7 +105,7 @@ router.put('/categories/occurrences/:id', authenticate, authorize('ADMIN'), asyn
                 entityId: category.id,
                 action: 'UPDATE',
                 details: JSON.stringify(req.body),
-                performedBy: req.user?.userId || 'system',
+                performedBy: req.user?.id || 'system',
             },
         });
 

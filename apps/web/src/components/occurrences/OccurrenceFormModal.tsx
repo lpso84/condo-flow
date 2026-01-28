@@ -26,7 +26,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { occurrenceSchema, OccurrenceInput, Occurrence } from '@condoflow/shared';
+import { occurrenceSchema, OccurrenceInput, Occurrence, PaginatedResponse, Condominium, Supplier } from '@condoflow/shared';
 import { apiClient } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/components/ui/use-toast';
@@ -69,18 +69,18 @@ export function OccurrenceFormModal({
 
     const { data: condosData } = useQuery({
         queryKey: ['condominiums-list'],
-        queryFn: () => apiClient.get('/condominiums', { pageSize: 100 }),
+        queryFn: () => apiClient.get<PaginatedResponse<any>>('/condominiums', { pageSize: 100 }).then(res => res.data),
     });
 
     const { data: fractionsData } = useQuery({
         queryKey: ['fractions-list', selectedCondoId],
-        queryFn: () => apiClient.get(`/condominiums/${selectedCondoId}/fractions`),
+        queryFn: () => apiClient.get<PaginatedResponse<any>>(`/condominiums/${selectedCondoId}/fractions`).then(res => res.data),
         enabled: !!selectedCondoId,
     });
 
     const { data: suppliersData } = useQuery({
         queryKey: ['suppliers-list'],
-        queryFn: () => apiClient.get('/suppliers', { pageSize: 100 }),
+        queryFn: () => apiClient.get<PaginatedResponse<any>>('/suppliers', { pageSize: 100 }).then(res => res.data),
     });
 
     const condominiums = condosData?.data || [];
@@ -125,13 +125,13 @@ export function OccurrenceFormModal({
         try {
             setIsSubmitting(true);
             if (isEditing) {
-                await apiClient.put(`/occurrences/${occurrence!.id}`, data);
+                await apiClient.put(`/occurrences/${occurrence!.id}`, data).then(res => res.data);
                 toast({
                     title: 'Ocorrência atualizada',
                     description: 'A ocorrência foi atualizada com sucesso.',
                 });
             } else {
-                await apiClient.post('/occurrences', data);
+                await apiClient.post('/occurrences', data).then(res => res.data);
                 toast({
                     title: 'Ocorrência criada',
                     description: 'A ocorrência foi criada com sucesso.',
@@ -178,7 +178,7 @@ export function OccurrenceFormModal({
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {condominiums.map((c: any) => (
+                                                {condominiums.map((c: Condominium) => (
                                                     <SelectItem key={c.id} value={c.id}>
                                                         {c.name}
                                                     </SelectItem>
@@ -335,7 +335,7 @@ export function OccurrenceFormModal({
                                             </FormControl>
                                             <SelectContent>
                                                 <SelectItem value="NONE">Sem fornecedor</SelectItem>
-                                                {suppliers.map((s: any) => (
+                                                {suppliers.map((s: Supplier) => (
                                                     <SelectItem key={s.id} value={s.id}>
                                                         {s.name}
                                                     </SelectItem>

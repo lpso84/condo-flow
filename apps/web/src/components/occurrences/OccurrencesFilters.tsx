@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Filter, X, Calendar as CalendarIcon, Users } from 'lucide-react';
+import { Search, Filter, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,7 +10,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { OccurrenceQuery } from '@condoflow/shared';
+import { OccurrenceQuery, PaginatedResponse, Condominium, Fraction } from '@condoflow/shared';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
 
@@ -24,25 +24,19 @@ export function OccurrencesFilters({ filters, onFiltersChange }: OccurrencesFilt
 
     const { data: condosData } = useQuery({
         queryKey: ['condominiums-list'],
-        queryFn: () => apiClient.get('/condominiums', { pageSize: 100 }),
+        queryFn: () => apiClient.get<PaginatedResponse<any>>('/condominiums', { pageSize: 100 }).then(res => res.data),
     });
 
     const selectedCondominiumId = filters.condominiumId;
 
     const { data: fractionsData } = useQuery({
         queryKey: ['fractions-list-filters', selectedCondominiumId],
-        queryFn: () => apiClient.get(`/condominiums/${selectedCondominiumId}/fractions`),
+        queryFn: () => apiClient.get<PaginatedResponse<any>>(`/condominiums/${selectedCondominiumId}/fractions`).then(res => res.data),
         enabled: !!selectedCondominiumId,
-    });
-
-    const { data: suppliersData } = useQuery({
-        queryKey: ['suppliers-list-filters'],
-        queryFn: () => apiClient.get('/suppliers', { pageSize: 100 }),
     });
 
     const condominiums = condosData?.data || [];
     const fractions = fractionsData?.data || [];
-    const suppliers = suppliersData?.data || [];
 
     const handleSearchChange = (value: string) => {
         onFiltersChange({ ...filters, search: value || undefined, page: 1 });
@@ -144,7 +138,7 @@ export function OccurrencesFilters({ filters, onFiltersChange }: OccurrencesFilt
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="ALL">Todos os condomínios</SelectItem>
-                                {condominiums.map((c: any) => (
+                                {condominiums.map((c: Condominium) => (
                                     <SelectItem key={c.id} value={c.id}>
                                         {c.name}
                                     </SelectItem>
@@ -187,7 +181,7 @@ export function OccurrencesFilters({ filters, onFiltersChange }: OccurrencesFilt
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="ALL">Todas as frações</SelectItem>
-                                {fractions.map((f: any) => (
+                                {fractions.map((f: Fraction) => (
                                     <SelectItem key={f.id} value={f.id}>
                                         {f.number} - {f.ownerName}
                                     </SelectItem>
@@ -234,8 +228,8 @@ export function OccurrencesFilters({ filters, onFiltersChange }: OccurrencesFilt
                                 !filters.from && !filters.to
                                     ? 'ALL'
                                     : filters.from && !filters.to
-                                    ? 'CUSTOM'
-                                    : 'CUSTOM'
+                                        ? 'CUSTOM'
+                                        : 'CUSTOM'
                             }
                             onValueChange={(val) => {
                                 const now = new Date();

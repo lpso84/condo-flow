@@ -41,7 +41,7 @@ interface SupplierDetailDrawerProps {
 export function SupplierDetailDrawer({ supplierId, open, onOpenChange, onEdit }: SupplierDetailDrawerProps) {
     const { data: supplier, isLoading } = useQuery<Supplier>({
         queryKey: ['supplier-detail', supplierId],
-        queryFn: () => apiClient.get(`/suppliers/${supplierId}`),
+        queryFn: () => apiClient.get<Supplier>(`/suppliers/${supplierId}`).then(res => res.data),
         enabled: !!supplierId && open,
     });
 

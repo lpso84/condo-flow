@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../../lib/api';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -11,25 +11,15 @@ import {
     TableHeader,
     TableRow
 } from '../../components/ui/table';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger
-} from '../../components/ui/dialog';
 import { Badge } from '../../components/ui/badge';
-import { Loader2, Plus, Search, Shield, User, X } from 'lucide-react';
-import { toast } from 'sonner';
+import { Loader2, Search } from 'lucide-react';
 
 export default function UsersSettingsPage() {
-    const queryClient = useQueryClient();
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const { data: users, isLoading } = useQuery({
+    const { data: users, isLoading } = useQuery<any[]>({
         queryKey: ['settings-users'],
-        queryFn: () => apiClient.get('/settings/users').then(res => res.data)
+        queryFn: () => apiClient.get<any[]>('/settings/users').then(res => res.data)
     });
 
     const filteredUsers = users?.filter((u: any) =>
@@ -44,10 +34,6 @@ export default function UsersSettingsPage() {
                     <h2 className="text-xl font-semibold text-gray-900">Utilizadores & Perfis</h2>
                     <p className="text-sm text-gray-500">Gerir acessos e permissões da equipa.</p>
                 </div>
-                <Button onClick={() => setIsDialogOpen(true)}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Novo Utilizador
-                </Button>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

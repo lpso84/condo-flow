@@ -27,7 +27,7 @@ export function DocumentDetailDrawer({ documentId, onClose, onUpdate }: Document
         if (documentId) {
             setLoading(true);
             apiClient.get<Document>(`/documents/${documentId}`)
-                .then(setDocument)
+                .then(res => setDocument(res.data))
                 .catch(() => toast.error('Erro ao carregar detalhes'))
                 .finally(() => setLoading(false));
         } else {
@@ -43,7 +43,7 @@ export function DocumentDetailDrawer({ documentId, onClose, onUpdate }: Document
             setShowUploadVersion(false);
             setNewVersionFile(null);
             // Refresh detailed view
-            apiClient.get<Document>(`/documents/${document.id}`).then(setDocument);
+            apiClient.get<Document>(`/documents/${document.id}`).then(res => setDocument(res.data));
             onUpdate();
         } catch {
             toast.error('Erro ao carregar versão');

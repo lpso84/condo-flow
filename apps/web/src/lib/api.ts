@@ -43,7 +43,7 @@ class ApiClient {
         return response.json();
     }
 
-    async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+    async get<T>(endpoint: string, params?: Record<string, any>): Promise<{ data: T }> {
         const url = params
             ? `${endpoint}?${new URLSearchParams(
                 Object.entries(params)
@@ -52,38 +52,43 @@ class ApiClient {
             )}`
             : endpoint;
 
-        return this.request<T>(url);
+        const response = await this.request<T>(url);
+        return { data: response };
     }
 
-    async post<T>(endpoint: string, data?: any): Promise<T> {
-        return this.request<T>(endpoint, {
+    async post<T>(endpoint: string, data?: any): Promise<{ data: T }> {
+        const response = await this.request<T>(endpoint, {
             method: 'POST',
             body: data ? JSON.stringify(data) : undefined,
         });
+        return { data: response };
     }
 
-    async put<T>(endpoint: string, data: any): Promise<T> {
-        return this.request<T>(endpoint, {
+    async put<T>(endpoint: string, data: any): Promise<{ data: T }> {
+        const response = await this.request<T>(endpoint, {
             method: 'PUT',
             body: JSON.stringify(data),
         });
+        return { data: response };
     }
 
-    async delete<T>(endpoint: string): Promise<T> {
-        return this.request<T>(endpoint, {
+    async delete<T>(endpoint: string): Promise<{ data: T }> {
+        const response = await this.request<T>(endpoint, {
             method: 'DELETE',
         });
+        return { data: response };
     }
 
     // Auth
     async login(credentials: LoginInput): Promise<LoginResponse> {
         const response = await this.post<LoginResponse>('/auth/login', credentials);
-        this.setToken(response.token);
-        return response;
+        this.setToken(response.data.token);
+        return response.data;
     }
 
     async getCurrentUser(): Promise<User> {
-        return this.get<User>('/auth/me');
+        const response = await this.get<User>('/auth/me');
+        return response.data;
     }
 
     logout() {

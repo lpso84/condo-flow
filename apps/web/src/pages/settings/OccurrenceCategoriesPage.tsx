@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../../lib/api';
 import { Button } from '../../components/ui/button';
@@ -12,30 +12,22 @@ import {
     TableRow
 } from '../../components/ui/table';
 import { Badge } from '../../components/ui/badge';
-import { Loader2, Plus, Clock, AlertTriangle, Trash2, Save } from 'lucide-react';
+import { Loader2, Plus, Clock, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function OccurrenceCategoriesPage() {
     const queryClient = useQueryClient();
-    const [editingId, setEditingId] = useState<string | null>(null);
     const [newCategory, setNewCategory] = useState<{ name: string, slaHours: number, priority: string } | null>(null);
 
-    const { data: categories, isLoading } = useQuery({
+    const { data: categories, isLoading } = useQuery<any[]>({
         queryKey: ['settings-occurrence-categories'],
-        queryFn: () => apiClient.get('/settings/categories/occurrences').then(res => res.data)
+        queryFn: () => apiClient.get<any[]>('/settings/categories/occurrences').then(res => res.data)
     });
 
-    const updateMutation = useMutation({
-        mutationFn: (data: any) => apiClient.put(`/settings/categories/occurrences/${data.id}`, data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['settings-occurrence-categories'] });
-            setEditingId(null);
-            toast.success('Categoria atualizada');
-        }
-    });
+
 
     const createMutation = useMutation({
-        mutationFn: (data: any) => apiClient.post('/settings/categories/occurrences', data),
+        mutationFn: (data: any) => apiClient.post('/settings/categories/occurrences', data).then(res => res.data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['settings-occurrence-categories'] });
             setNewCategory(null);
@@ -44,7 +36,7 @@ export default function OccurrenceCategoriesPage() {
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id: string) => apiClient.delete(`/settings/categories/occurrences/${id}`),
+        mutationFn: (id: string) => apiClient.delete(`/settings/categories/occurrences/${id}`).then(res => res.data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['settings-occurrence-categories'] });
             toast.success('Categoria removida');

@@ -1,19 +1,18 @@
-import React from 'react';
+import { FormEvent } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../../lib/api';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
-import { Switch } from '../../components/ui/switch';
 import { Loader2, Save, Euro, Percent } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function FinancialSettingsPage() {
     const queryClient = useQueryClient();
 
-    const { data: settings, isLoading } = useQuery({
+    const { data: settings, isLoading } = useQuery<any>({
         queryKey: ['global-settings'],
-        queryFn: () => apiClient.get('/settings/global').then(res => res.data)
+        queryFn: () => apiClient.get<any>('/settings/global').then(res => res.data)
     });
 
     const mutation = useMutation({
@@ -27,7 +26,7 @@ export default function FinancialSettingsPage() {
         }
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         const formData = new FormData(e.target as HTMLFormElement);
         const updates = {

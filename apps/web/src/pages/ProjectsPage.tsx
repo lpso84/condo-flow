@@ -59,12 +59,12 @@ export default function ProjectsPage() {
 
     const { data, isLoading } = useQuery<PaginatedResponse<Project>>({
         queryKey: ['projects', search],
-        queryFn: () => apiClient.get('/projects', { search, pageSize: 50 }),
+        queryFn: () => apiClient.get<PaginatedResponse<Project>>('/projects', { search, pageSize: 50 }).then(res => res.data),
     });
 
     const { data: condominiumsData } = useQuery<PaginatedResponse<Condominium>>({
         queryKey: ['condominiums-list'],
-        queryFn: () => apiClient.get('/condominiums', { pageSize: 100 }),
+        queryFn: () => apiClient.get<PaginatedResponse<Condominium>>('/condominiums', { pageSize: 100 }).then(res => res.data),
     });
 
     const projects = data?.data || [];
@@ -85,7 +85,7 @@ export default function ProjectsPage() {
     });
 
     const createProject = useMutation({
-        mutationFn: (data: ProjectFormData) => apiClient.post('/projects', data),
+        mutationFn: (data: ProjectFormData) => apiClient.post<Project>('/projects', data).then(res => res.data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['projects'] });
             toast({

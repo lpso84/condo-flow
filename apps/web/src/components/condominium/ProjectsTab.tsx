@@ -21,7 +21,7 @@ interface ProjectsTabProps {
 export function ProjectsTab({ condominiumId }: ProjectsTabProps) {
     const { data, isLoading } = useQuery<PaginatedResponse<Project>>({
         queryKey: ['condominium-projects', condominiumId],
-        queryFn: () => apiClient.get('/projects', { condominiumId }),
+        queryFn: () => apiClient.get<PaginatedResponse<Project>>('/projects', { condominiumId }).then(res => res.data),
     });
 
     const getStatusBadge = (status: string) => {

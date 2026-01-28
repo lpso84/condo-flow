@@ -23,7 +23,7 @@ interface AssembliesTabProps {
 export function AssembliesTab({ condominiumId }: AssembliesTabProps) {
     const { data, isLoading } = useQuery<PaginatedResponse<Assembly>>({
         queryKey: ['condominium-assemblies', condominiumId],
-        queryFn: () => apiClient.get('/assemblies', { condominiumId }),
+        queryFn: () => apiClient.get<PaginatedResponse<Assembly>>('/assemblies', { condominiumId }).then(res => res.data),
     });
 
     const getStatusBadge = (status: string) => {
@@ -63,13 +63,13 @@ export function AssembliesTab({ condominiumId }: AssembliesTabProps) {
                                 <div className="flex flex-col md:flex-row md:items-center gap-6">
                                     <div className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-xl min-w-[100px] border border-gray-100">
                                         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                                            {assembly.scheduledDate ? format(new Date(assembly.scheduledDate), "MMM", { locale: pt }) : '---'}
+                                            {assembly.date ? format(new Date(assembly.date), "MMM", { locale: pt }) : '---'}
                                         </span>
                                         <span className="text-2xl font-black text-gray-900">
-                                            {assembly.scheduledDate ? format(new Date(assembly.scheduledDate), "dd") : '--'}
+                                            {assembly.date ? format(new Date(assembly.date), "dd") : '--'}
                                         </span>
                                         <span className="text-[10px] font-bold text-gray-500">
-                                            {assembly.scheduledDate ? format(new Date(assembly.scheduledDate), "yyyy") : '----'}
+                                            {assembly.date ? format(new Date(assembly.date), "yyyy") : '----'}
                                         </span>
                                     </div>
 
@@ -84,7 +84,7 @@ export function AssembliesTab({ condominiumId }: AssembliesTabProps) {
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <div className="flex items-center text-xs text-gray-600">
                                                 <Clock className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                                                {assembly.scheduledDate ? format(new Date(assembly.scheduledDate), "HH:mm") : 'Hora a definir'}
+                                                {assembly.date ? format(new Date(assembly.date), "HH:mm") : 'Hora a definir'}
                                             </div>
                                             <div className="flex items-center text-xs text-gray-600">
                                                 <MapPin className="mr-2 h-3.5 w-3.5 text-muted-foreground" />

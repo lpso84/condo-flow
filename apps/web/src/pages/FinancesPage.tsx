@@ -30,26 +30,26 @@ export default function FinancesPage() {
     // Data Fetching
     const { data, isLoading, refetch } = useQuery<PaginatedResponse<Transaction>>({
         queryKey: ['transactions-global', filters],
-        queryFn: () => apiClient.get('/transactions', filters),
+        queryFn: () => apiClient.get<PaginatedResponse<Transaction>>('/transactions', filters).then(res => res.data),
     });
 
-    const { data: summary, isLoading: isLoadingSummary } = useQuery({
+    const { data: summary, isLoading: isLoadingSummary } = useQuery<{ totalRevenue: number; totalExpenses: number; balance: number; count: number; }>({
         queryKey: ['transactions-summary', filters],
-        queryFn: () => apiClient.get('/transactions/summary', {
+        queryFn: () => apiClient.get<{ totalRevenue: number; totalExpenses: number; balance: number; count: number; }>('/transactions/summary', {
             condominiumId: filters.condominiumId,
             from: filters.from,
             to: filters.to
-        }),
-    }) as { data: { totalRevenue: number; totalExpenses: number; balance: number; count: number; } | undefined, isLoading: boolean };
+        }).then(res => res.data),
+    });
 
     const { data: condosData } = useQuery<PaginatedResponse<Condominium>>({
         queryKey: ['condominiums-list'],
-        queryFn: () => apiClient.get('/condominiums', { pageSize: 100 }),
+        queryFn: () => apiClient.get<PaginatedResponse<Condominium>>('/condominiums', { pageSize: 100 }).then(res => res.data),
     });
 
     // Mutations
     const createMutation = useMutation({
-        mutationFn: (data: TransactionInput) => apiClient.post('/transactions', data),
+        mutationFn: (data: TransactionInput) => apiClient.post('/transactions', data).then(res => res.data),
         onSuccess: () => {
             toast({ title: 'Sucesso', description: 'Movimento registado com sucesso.' });
             queryClient.invalidateQueries({ queryKey: ['transactions-global'] });
@@ -60,7 +60,7 @@ export default function FinancesPage() {
     });
 
     const updateMutation = useMutation({
-        mutationFn: (data: TransactionInput) => apiClient.put(`/ transactions / ${selectedTransaction?.id} `, data),
+        mutationFn: (data: TransactionInput) => apiClient.put(`/transactions/${selectedTransaction?.id}`, data).then(res => res.data),
         onSuccess: () => {
             toast({ title: 'Sucesso', description: 'Movimento atualizado com sucesso.' });
             queryClient.invalidateQueries({ queryKey: ['transactions-global'] });
@@ -71,7 +71,7 @@ export default function FinancesPage() {
     });
 
     const cancelMutation = useMutation({
-        mutationFn: (id: string) => apiClient.post(`/ transactions / ${id}/cancel`),
+        mutationFn: (id: string) => apiClient.post(`/transactions/${id}/cancel`).then(res => res.data),
         onSuccess: () => {
             toast({ title: 'Movimento Anulado', description: 'O movimento foi anulado e o saldo revertido.' });
             queryClient.invalidateQueries({ queryKey: ['transactions-global'] });
