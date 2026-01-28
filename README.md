@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CondoFlow
 
 Production-grade condominium management platform for Portugal.
@@ -311,3 +312,7 @@ Proprietary - All rights reserved
 ## Support
 
 For issues or questions, contact: support@condoflow.pt
+=======
+# condo-flow
+CondoFlow – SaaS platform for condominium management in Portugal. Dashboards, incidents, finances, assemblies, documents and suppliers built with React and TypeScript.
+>>>>>>> 67d809383b802152f0fce0d36e5368eef25c49c6

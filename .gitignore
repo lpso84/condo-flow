@@ -1,5 +1,6 @@
 # Dependencies
-**/node_modules
+node_modules/
+**/node_modules/
 .pnp
 .pnp.js
 
@@ -14,7 +15,10 @@ build/
 # Environment
 .env
 .env.*
-!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Logs
 *.log
@@ -24,26 +28,29 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Vercel
-.vercel
-
-# Editor
+# Editor / IDE
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
+.DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# OS
-Thumbs.db
-.DS_Store
-
-# Database
+# Database (SQLite)
 *.db
 *.db-journal
+dev.db
+dev.db-journal
 
-# Prisma (generated)
+# Prisma
 apps/api/prisma/migrations/
+
+# Vercel
+.vercel
+
+# Local debug artifacts
+apps/web/tsc_errors*.txt
