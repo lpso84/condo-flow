@@ -1,0 +1,424 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String            @id @default(uuid())
+  email           String            @unique
+  password        String
+  name            String
+  role            String            // ADMIN, GESTOR, COLABORADOR
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  condominiums    UserCondominium[]
+}
+
+model Condominium {
+  id                  String        @id @default(uuid())
+  name                String
+  address             String
+  postalCode          String
+  city                String
+  nif                 String        @unique
+  bankAccount         String
+  balance             Float         @default(0)
+  debtTotal           Float         @default(0)
+  reserveFund         Float         @default(0)
+  riskLevel           String        @default("LOW") // LOW, MEDIUM, HIGH, CRITICAL
+  urgentOccurrences   Int           @default(0)
+  openOccurrences     Int           @default(0)
+  fractionsCount      Int           @default(0)
+  nextAssemblyDate    DateTime?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  fractions           Fraction[]
+  occurrences         Occurrence[]
+  transactions        Transaction[]
+  projects            Project[]
+  assemblies          Assembly[]
+  documents           Document[]
+  contacts            Contact[]
+  users               UserCondominium[]
+
+  @@index([riskLevel])
+  @@index([nextAssemblyDate])
+}
+
+model Fraction {
+  id            String        @id @default(uuid())
+  condominiumId String
+  number        String
+  floor         String
+  block         String?
+  staircase     String?
+  typology      String        @default("T2") // T0, T1, T2, T3, T4, T5, OUTRO
+  permillage    Float
+  monthlyQuota  Float
+  ownerName     String
+  ownerEmail    String?
+  ownerPhone    String?
+  tenantName    String?
+  tenantEmail   String?
+  tenantPhone   String?
+  occupation    String        @default("PROPRIETARIO") // PROPRIETARIO, ARRENDADA, DESCONHECIDO
+  paymentStatus String        @default("EM_DIA") // EM_DIA, ATRASO, CRITICO
+  debtAmount    Float         @default(0)
+  isActive      Boolean       @default(true)
+  isFollowUp    Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  condominium   Condominium   @relation(fields: [condominiumId], references: [id], onDelete: Cascade)
+  occurrences   Occurrence[]
+  transactions  Transaction[]
+
+  @@index([condominiumId])
+  @@index([paymentStatus])
+  @@index([isActive])
+}
+
+model Occurrence {
+  id                 String               @id @default(uuid())
+  condominiumId      String
+  fractionId         String?
+  title              String
+  description        String
+  category           String // INFILTRACAO, ELEVADOR, LIMPEZA, etc.
+  priority           String // NORMAL, URGENTE
+  status             String               @default("ABERTA") // ABERTA, EM_ANALISE, EM_EXECUCAO, RESOLVIDA, ARQUIVADA
+  location           String
+  reportedBy         String
+  reportedAt         DateTime             @default(now())
+  slaDeadline        DateTime?
+  assignedSupplierId String?
+  resolvedAt         DateTime?
+  notes              String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  condominium        Condominium          @relation(fields: [condominiumId], references: [id], onDelete: Cascade)
+  fraction           Fraction?            @relation(fields: [fractionId], references: [id], onDelete: SetNull)
+  supplier           Supplier?            @relation(fields: [assignedSupplierId], references: [id], onDelete: SetNull)
+  documents          Document[]
+  comments           OccurrenceComment[]
+  auditLogs          OccurrenceAuditLog[]
+
+  @@index([condominiumId])
+  @@index([status])
+  @@index([priority])
+  @@index([slaDeadline])
+}
+
+model OccurrenceComment {
+  id           String     @id @default(uuid())
+  occurrenceId String
+  text         String
+  authorId     String
+  authorName   String
+  createdAt    DateTime   @default(now())
+  occurrence   Occurrence @relation(fields: [occurrenceId], references: [id], onDelete: Cascade)
+
+  @@index([occurrenceId])
+}
+
+model OccurrenceAuditLog {
+  id           String     @id @default(uuid())
+  occurrenceId String
+  action       String // STATUS_CHANGE, ASSIGNMENT, CREATION, etc.
+  metadata     String? // JSON string with details
+  authorId     String
+  authorName   String
+  createdAt    DateTime   @default(now())
+  occurrence   Occurrence @relation(fields: [occurrenceId], references: [id], onDelete: Cascade)
+
+  @@index([occurrenceId])
+}
+
+model Transaction {
+  id            String       @id @default(uuid())
+  condominiumId String
+  fractionId    String?
+  supplierId    String?
+  type          String // RECEITA, DESPESA
+  category      String // QUOTA, FUNDO_RESERVA, MANUTENCAO, etc.
+  amount        Float
+  description   String
+  date          DateTime
+  paymentMethod String? // TRANSFERENCIA, MULTIBANCO, DINHEIRO, DEBITO_DIRETO
+  reference     String?
+  status        String       @default("NORMAL") // NORMAL, REEMBOLSADO, ANULADO, PENDENTE
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  condominium   Condominium  @relation(fields: [condominiumId], references: [id], onDelete: Cascade)
+  fraction      Fraction?    @relation(fields: [fractionId], references: [id], onDelete: SetNull)
+  supplier      Supplier?    @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  documents     Document[]
+
+  @@index([condominiumId])
+  @@index([date])
+  @@index([type])
+  @@index([status])
+}
+
+model Supplier {
+  id            String        @id @default(uuid())
+  name          String
+  nif           String        @unique
+  email         String?
+  phone         String?
+  address       String?
+  contactPerson String?
+  categories    String
+  notes         String?
+  tags          String?
+  favorite      Boolean       @default(false)
+  active        Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  occurrences   Occurrence[]
+  transactions  Transaction[]
+  projects      Project[]
+  documents     Document[]
+
+  @@index([active])
+  @@index([favorite])
+}
+
+model Project {
+  id             String       @id @default(uuid())
+  condominiumId  String
+  title          String
+  description    String
+  status         String       @default("PLANEAMENTO") // PLANEAMENTO, EM_APROVACAO, APROVADO, EM_EXECUCAO, CONCLUIDO, CANCELADO
+  budgetEstimate Float
+  startDate      DateTime?
+  endDate        DateTime?
+  supplierId     String?
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  condominium    Condominium  @relation(fields: [condominiumId], references: [id], onDelete: Cascade)
+  supplier       Supplier?    @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  documents      Document[]
+
+  @@index([condominiumId])
+  @@index([status])
+}
+
+model Assembly {
+  id            String       @id @default(uuid())
+  condominiumId String
+  year          Int
+  type          String       @default("AGO") // AGO, AGE
+  status        String       @default("NAO_MARCADA") // NAO_MARCADA, AGENDADA, REALIZADA, CANCELADA
+  date          DateTime?
+  location      String?
+  
+  // Relations
+  condominium   Condominium   @relation(fields: [condominiumId], references: [id], onDelete: Cascade)
+  documents     Document[]
+  agendaItems   AgendaItem[]
+  decisions     Decision[]
+  minutes       Minutes?
+  
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([condominiumId])
+  @@index([status])
+  @@index([date])
+  @@index([year])
+}
+
+model AgendaItem {
+  id          String   @id @default(uuid())
+  assemblyId  String
+  order       Int
+  title       String
+  description String?
+  
+  assembly    Assembly @relation(fields: [assemblyId], references: [id], onDelete: Cascade)
+
+  @@index([assemblyId])
+}
+
+model Decision {
+  id          String   @id @default(uuid())
+  assemblyId  String
+  description String
+  result      String   // APROVADA, REJEITADA, ADIADA
+  
+  assembly    Assembly @relation(fields: [assemblyId], references: [id], onDelete: Cascade)
+
+  @@index([assemblyId])
+}
+
+model Minutes {
+  id          String   @id @default(uuid())
+  assemblyId  String   @unique
+  content     String   // HTML/Text content
+  signedFile  String?  // Path to signed PDF
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  assembly    Assembly @relation(fields: [assemblyId], references: [id], onDelete: Cascade)
+}
+
+model Document {
+  id            String       @id @default(uuid())
+  condominiumId String
+  assemblyId    String?
+  occurrenceId  String?
+  supplierId    String?
+  transactionId String?
+  projectId     String?
+  
+  category      String // ATA, FATURA, CONTRATO, SEGURO, OUTROS
+  title         String
+  description   String?
+  fileName      String
+  filePath      String
+  fileSize      Int
+  mimeType      String
+  tags          String?
+  version       Int      @default(1)
+  uploadedBy    String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  
+  condominium   Condominium  @relation(fields: [condominiumId], references: [id], onDelete: Cascade)
+  assembly      Assembly?    @relation(fields: [assemblyId], references: [id], onDelete: SetNull)
+  occurrence    Occurrence?  @relation(fields: [occurrenceId], references: [id], onDelete: SetNull)
+  transaction   Transaction? @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+  supplier      Supplier?    @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  project       Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  
+  versions      DocumentVersion[]
+
+  @@index([condominiumId])
+  @@index([category])
+  @@index([transactionId])
+  @@index([supplierId])
+}
+
+model DocumentVersion {
+  id          String   @id @default(uuid())
+  documentId  String
+  version     Int
+  fileName    String
+  filePath    String
+  fileSize    Int
+  mimeType    String
+  uploadedBy  String
+  createdAt   DateTime @default(now())
+  
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  @@index([documentId])
+}
+
+model Contact {
+  id            String       @id @default(uuid())
+  condominiumId String
+  name          String
+  role          String // GESTOR, ADMINISTRADOR, CONSELHO_CONSULTIVO, FORNECEDOR_CHAVE, OUTRO
+  email         String?
+  phone         String?
+  description   String?
+  isPublic      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  condominium   Condominium  @relation(fields: [condominiumId], references: [id], onDelete: Cascade)
+
+  @@index([condominiumId])
+}
+
+// --- GLOBAL SETTINGS & CONFIGURATION MODELS ---
+
+model GlobalSettings {
+  id                          String   @id @default("global") // Singleton
+  companyName                 String   @default("CondoFlow")
+  companyLogo                 String?
+  emailFooter                 String?
+  
+  // Financial Defaults
+  defaultReserveFundPercentage Float   @default(10)
+  defaultIvaPercentage         Float   @default(23)
+  currency                     String  @default("EUR")
+  
+  // Notification Toggles
+  notifyOnOccurrence           Boolean @default(true)
+  notifyOnPaymentDelay         Boolean @default(true)
+  notifyOnAssembly             Boolean @default(true)
+  
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime @updatedAt
+}
+
+model OccurrenceCategory {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  slaHours  Int      @default(48)
+  priority  String   @default("NORMAL") // Default priority
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WorkflowState {
+  id        String   @id @default(uuid())
+  code      String   @unique // e.g., "ABERTA", "EM_ANALISE"
+  label     String
+  isFinal   Boolean  @default(false)
+  isInitial Boolean  @default(false)
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DocumentType {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  isSystem  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SupplierCategory {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  entity      String   // "SETTINGS", "USER", "CATEGORY", etc.
+  entityId    String?
+  action      String   // "CREATE", "UPDATE", "DELETE", "LOGIN"
+  details     String   // JSON string or description
+  performedBy String
+  createdAt   DateTime @default(now())
+  
+  @@index([entity])
+  @@index([createdAt])
+}
+
+model UserCondominium {
+  userId        String
+  condominiumId String
+  assignedAt    DateTime @default(now())
+  
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  condominium   Condominium @relation(fields: [condominiumId], references: [id], onDelete: Cascade)
+  
+  @@id([userId, condominiumId])
+}

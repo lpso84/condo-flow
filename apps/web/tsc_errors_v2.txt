@@ -1,0 +1,24 @@
+
+<--- Last few GCs --->
+
+[20884:00000173A1EB0000]    14339 ms: Scavenge 167.7 (187.2) -> 157.6 (189.8) MB, pooled: 0 MB, 3.75 / 0.00 ms  (average mu = 0.993, current mu = 0.993) allocation failure; 
+[20884:00000173A1EB0000]    15460 ms: Scavenge 171.8 (191.5) -> 166.7 (195.5) MB, pooled: 0 MB, 1022.28 / 0.00 ms  (average mu = 0.993, current mu = 0.993) allocation failure; 
+
+
+<--- JS stacktrace --->
+
+FATAL ERROR: NewSpace::EnsureCurrentCapacity Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 00007FF6EE9920AD node::SetCppgcReference+17245
+ 2: 00007FF6EE8FA4D8 v8::base::CPU::num_virtual_address_bits+92376
+ 3: 00007FF6EF47A1B1 v8::Isolate::ReportExternalAllocationLimitReached+65
+ 4: 00007FF6EF467096 v8::Function::Experimental_IsNopFunction+2790
+ 5: 00007FF6EF2B6920 v8::internal::StrongRootAllocatorBase::StrongRootAllocatorBase+31392
+ 6: 00007FF6EF29442F v8::CpuProfileNode::GetScriptResourceNameStr+91615
+ 7: 00007FF6EF2BD4B8 v8::internal::StrongRootAllocatorBase::StrongRootAllocatorBase+58936
+ 8: 00007FF6EF2BFA88 v8::internal::StrongRootAllocatorBase::StrongRootAllocatorBase+68616
+ 9: 00007FF6EF2B02E9 v8::internal::StrongRootAllocatorBase::StrongRootAllocatorBase+5225
+10: 00007FF6EF2ABCF5 v8::CpuProfileNode::GetScriptResourceNameStr+188069
+11: 00007FF6EEC313BD BIO_ssl_shutdown+189
+12: 7FF8000000000000 
