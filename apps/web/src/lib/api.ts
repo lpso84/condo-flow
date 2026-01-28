@@ -1,6 +1,6 @@
 import type { LoginInput, LoginResponse, User } from '@condoflow/shared';
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api';
 
 class ApiClient {
     private token: string | null = null;
