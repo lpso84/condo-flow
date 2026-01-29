@@ -1,5 +1,11 @@
 {
     "buildCommand": "pnpm -w build:web",
     "installCommand": "pnpm install --frozen-lockfile",
-    "outputDirectory": "apps/web/dist"
+    "outputDirectory": "apps/web/dist",
+    "rewrites": [
+        {
+            "source": "/api/:path*",
+            "destination": "https://condo-flow-api.onrender.com/api/:path*"
+        }
+    ]
 }
