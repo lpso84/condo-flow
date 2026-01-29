@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "concurrently \"pnpm --filter @condoflow/api dev\" \"pnpm --filter @condoflow/web dev\"",
     "build": "pnpm --filter @condoflow/shared build && pnpm --filter @condoflow/api build && pnpm --filter @condoflow/web build",
+    "build:shared": "pnpm --filter @condoflow/shared build",
     "build:web": "pnpm --filter @condoflow/shared build && pnpm --filter @condoflow/web build",
     "test": "pnpm --filter \"./apps/**\" --filter \"./packages/**\" test",
     "test:watch": "pnpm --filter \"./apps/**\" --filter \"./packages/**\" test:watch",
