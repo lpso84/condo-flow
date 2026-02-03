@@ -1,10 +1,31 @@
 import type { LoginInput, LoginResponse, User } from '@condoflow/shared';
 
+// Get API URL from environment variable
 const VITE_API_URL = import.meta.env.VITE_API_URL;
 
+// Validate that VITE_API_URL is defined
 if (!VITE_API_URL) {
-    throw new Error('VITE_API_URL environment variable is required');
+    const errorMsg = `
+[CondoFlow] CRITICAL ERROR: VITE_API_URL environment variable is not defined!
+
+This variable MUST be set at BUILD TIME for the frontend to work correctly.
+
+For Vercel deployment:
+1. Go to Vercel Dashboard > Project Settings > Environment Variables
+2. Add: VITE_API_URL = https://condo-flow-api.onrender.com
+
+For local development:
+1. Create a file: apps/web/.env.local
+2. Add: VITE_API_URL=http://localhost:3000
+
+Current environment: ${import.meta.env.MODE}
+Is Production: ${import.meta.env.PROD}
+`;
+    console.error(errorMsg);
+    throw new Error('VITE_API_URL environment variable is required. Check console for details.');
 }
+
+console.log('[CondoFlow API] Using API URL:', VITE_API_URL);
 
 export const API_HOST = VITE_API_URL;
 export const API_BASE = `${VITE_API_URL}/api`;
