@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api';
+import { apiClient, API_BASE } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import {
     Plus,
@@ -98,9 +98,8 @@ export default function FinancesPage() {
     };
 
     const handleExport = () => {
-        const baseUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001/api';
         const token = localStorage.getItem('token');
-        window.open(`${baseUrl}/transactions/export?token=${token}`, '_blank');
+        window.open(`${API_BASE}/transactions/export?token=${token}`, '_blank');
     };
 
     const openCreateModal = (type: 'RECEITA' | 'DESPESA') => {

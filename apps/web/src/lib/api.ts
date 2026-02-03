@@ -1,6 +1,13 @@
 import type { LoginInput, LoginResponse, User } from '@condoflow/shared';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api';
+const VITE_API_URL = import.meta.env.VITE_API_URL;
+
+if (!VITE_API_URL) {
+    throw new Error('VITE_API_URL environment variable is required');
+}
+
+export const API_HOST = VITE_API_URL;
+export const API_BASE = `${VITE_API_URL}/api`;
 
 class ApiClient {
     private token: string | null = null;

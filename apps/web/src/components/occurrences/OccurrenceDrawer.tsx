@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api';
+import { apiClient, API_HOST } from '@/lib/api';
 import {
     Sheet,
     SheetContent,
@@ -435,7 +435,7 @@ export function OccurrenceDrawer({ opened, onClose, occurrenceId }: OccurrenceDr
                                                                     variant="ghost"
                                                                     className="h-8 w-8"
                                                                     onClick={() => {
-                                                                        const baseUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001';
+                                                                        const baseUrl = API_HOST;
                                                                         window.open(`${baseUrl}${doc.filePath}`, '_blank');
                                                                     }}
                                                                 >
